@@ -1,0 +1,32 @@
+<redis>
+
+    <typeAlias>
+        <alias name="teacer" javaType="RedisORM.useTest.Teacher"/>
+        <alias name="student" javaType="RedisORM.useTest.Student"/>
+    </typeAlias>
+
+    <datasource>
+        <host>localhost</host>
+        <port>6379</port>
+        <pooled maxtotal="30" maxidle="10">true</pooled>
+    </datasource>
+
+    <mappers>
+        <hash id="test" javaType="RedisORM.parseTest.Test">
+            <key property="id" />
+            <field property="age" />
+            <field property="name" />
+            <hash property="address" id="test"/>
+            <hash property="concat" id="test"/>
+            <set property="teachers" key="teachers" />
+            <list property="courses" key="courses" />
+            <string property="singnature" key="singnature" />
+        </hash>
+    </mappers>
+
+    <scan>
+        <class type="teacher"/>
+        <class type="student"/>
+    </scan>
+
+</redis>

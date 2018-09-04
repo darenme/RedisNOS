@@ -1,0 +1,52 @@
+<redis>
+    <settings>
+        <lazyload>false</lazyload>
+    </settings>
+
+    <typeAlias>
+        <alias name="teacher" javaType="RedisORM.useTest.Teacher"/>
+        <alias name="student" javaType="RedisORM.useTest.Student"/>
+    </typeAlias>
+
+    <datasource>
+        <host>localhost</host>
+        <port>6379</port>
+        <pooled maxtotal="30" maxidle="10">true</pooled>
+    </datasource>
+
+    <scan>
+        <class type="teacher"/>
+        <class type="student"/>
+    </scan>
+
+</redis>
+
+
+
+        <!--@RHash(id="test")-->
+        <!--public class Test {-->
+
+        <!--@RKey-->
+        <!--String id;-->
+
+        <!--@RField(field = "name",exist = Exist.Default)-->
+        <!--int age;-->
+
+        <!--@RField(field = "name",exist = Exist.Default)-->
+        <!--String name;-->
+
+        <!--@RHash(id="test")-->
+        <!--Test address;-->
+
+        <!--@RHash(id="test")-->
+        <!--Test concat;-->
+
+        <!--@RSet(key="teachers",sorted = false)-->
+        <!--Test teachers;-->
+
+        <!--@RList(key="courses")-->
+        <!--Test courses;-->
+
+        <!--@RString(key = "signature" , exist = Exist.EX)-->
+        <!--String signature;-->
+        <!--}-->
