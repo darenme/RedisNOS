@@ -11,10 +11,7 @@ import RedisORM.logging.Log;
 import RedisORM.logging.LogFactory;
 import RedisORM.maps.*;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BuilderItemMap {
 
@@ -51,15 +48,18 @@ public class BuilderItemMap {
         while(items.hasNext()){
             Map.Entry<String,HashItem> entry = items.next();
             HashItem hi= entry.getValue();
-            Map<String,Execute> executes = hi.getExecutes();
-            List<String> itemproperty = hi.getHashproperty();
-            List<Class> clazzs = hi.getHashItems();
-            for (int i = 0; i < itemproperty.size(); i++) {
-                executes.put(itemproperty.get(i),itemMap.get(clazzs.get(i)));
+            if(!hi.isSerialize()){
+                Map<String,Execute> executes = hi.getExecutes();
+                List<String> itemproperty = hi.getHashproperty();
+                List<Class> clazzs = hi.getHashItems();
+                for (int i = 0; i < itemproperty.size(); i++) {
+                    executes.put(itemproperty.get(i),itemMap.get(clazzs.get(i)));
+                }
             }
         }
     }
 
+    // 根据RHashMap构造一个HashItem
     private HashItem createHashItem(RHashMap rHashMap){
         if(log.isDebugEnabled()){
             log.debug("----building HashItem: "+rHashMap.getJavaType().getCanonicalName());
@@ -74,14 +74,74 @@ public class BuilderItemMap {
         Method  idGetMethod = getorsetMethod(idget,javaType,null,true);
         Method  idSetMethod = getorsetMethod(idset,javaType,keymap.getJavaType(),false);
 
-        HashItem hashItem= new HashItem(configuration,javaType,idGetMethod,idSetMethod,keymap.getJavaType());
-        completeHashItem_StringItem(javaType,hashItem,rHashMap);
-        completeHashItem_FieldItem(javaType,hashItem,rHashMap);
-        completeHashItem_ListItem(javaType,hashItem,rHashMap);
-        completeHashItem_SetItem(javaType,hashItem,rHashMap);
-        completeHashItem_HashItem(javaType,hashItem,rHashMap);
-        return hashItem;
+        HashItem hashItem = null;
 
+        if(rHashMap.isSerialize()){
+            hashItem = new HashItem(configuration,javaType,idGetMethod,idSetMethod,keymap.getJavaType(),true);
+        }else{
+            hashItem = new HashItem(configuration,javaType,idGetMethod,idSetMethod,keymap.getJavaType(),false);
+            completeHashItem_StringItem(javaType,hashItem,rHashMap);
+            completeHashItem_FieldItem(javaType,hashItem,rHashMap);
+            completeHashItem_ListItem(javaType,hashItem,rHashMap);
+            completeHashItem_SetItem(javaType,hashItem,rHashMap);
+            completeHashItem_HashItem(javaType,hashItem,rHashMap);
+            completeHashItem_SerializeItem(javaType,hashItem,rHashMap);
+        }
+
+        return hashItem;
+    }
+
+    private void completeHashItem_SerializeItem(Class javaType, HashItem hashItem, RHashMap rHashMap) {
+        if(log.isDebugEnabled()){
+            log.debug("--------building SerializeItem");
+        }
+        List<RHashMapRef> rHashMapRefs = rHashMap.getRHashMapRefs();
+        for(int i=0;i<rHashMapRefs.size();i++){
+            if(rHashMapRefs.get(i).isSerialize()) {
+                List<SerializeItem> serializeItems = hashItem.getSerializeItems();
+                RHashMapRef rHashMapRef = rHashMapRefs.get(i);
+                SerializeItem si = createSerializeItem(javaType,rHashMapRef);
+                serializeItems.add(si);
+                hashItem.getExecutes().put(rHashMapRefs.get(i).getProperty(),si);
+            }
+        }
+    }
+
+    private SerializeItem createSerializeItem(Class javaType, RHashMapRef rHashMapRef) {
+        if(log.isDebugEnabled()){
+            log.debug("------------creating SerializeItem: '"+rHashMapRef.getProperty()+"'");
+        }
+        String property = rHashMapRef.getProperty();
+        Method getMethod = getorsetMethod(getorsetName(property,true),javaType,null,true);
+        Method setMethod = getorsetMethod(getorsetName(property,false),javaType,rHashMapRef.getJavaType(),false);
+        return new SerializeItem(OPBuilderHelper.hashSetByteOP(handle),OPBuilderHelper.hashGetByteOP(handle),setMethod,getMethod,rHashMapRef.getJavaType(),property);
+
+    }
+
+    // 创造FieldItem
+    private void completeHashItem_FieldItem(Class javaType, HashItem hashItem, RHashMap rHashMap) {
+        if(log.isDebugEnabled()){
+            log.debug("--------building FieldItem");
+        }
+        // 根据  rFieldMaps --> fieldItems
+        List<RFieldMap> rFieldMaps = rHashMap.getRFieldMaps();
+        List<FieldItem> fieldItems = hashItem.getFieldItems();
+        for(int i=0;i<rFieldMaps.size();i++){
+            RFieldMap rFieldMap = rFieldMaps.get(i);
+            FieldItem fi = createFieldItem(javaType,rFieldMap);
+            fieldItems.add(fi);
+            hashItem.getExecutes().put(rFieldMap.getProperty(),fi);
+        }
+    }
+
+    private FieldItem createFieldItem(Class javaType, RFieldMap rFieldMap) {
+        if(log.isDebugEnabled()){
+            log.debug("------------building FieldItem: '"+rFieldMap.getProperty()+"'");
+        }
+        String property = rFieldMap.getProperty();
+        Method getMethod = getorsetMethod(getorsetName(property,true),javaType,null,true);
+        Method setMethod = getorsetMethod(getorsetName(property,false),javaType,rFieldMap.getJavaType(),false);
+        return new FieldItem(OPBuilderHelper.hashSetOP(handle),OPBuilderHelper.hashGetOP(handle),setMethod,getMethod,property,rFieldMap.getJavaType());
     }
 
     private void completeHashItem_HashItem(Class javaType, HashItem hashItem, RHashMap rHashMap) {
@@ -92,16 +152,17 @@ public class BuilderItemMap {
         // hashItem中嵌套类的字段名集合
         List<String> itemproperty = hashItem.getHashproperty();
         for(int i=0;i<rHashMapRefs.size();i++){
-            // 填充两个集合
-            hashItems.add(hashMaps.get(rHashMapRefs.get(i).getId()).getJavaType());
-            itemproperty.add(rHashMapRefs.get(i).getProperty());
-            // 补充嵌套字段对应的set、get函数
-            Method getMethod = getorsetMethod(getorsetName(rHashMapRefs.get(i).getProperty(),true),javaType,hashMaps.get(rHashMapRefs.get(i).getId()).getJavaType(),true);
-            Method setMethod = getorsetMethod(getorsetName(rHashMapRefs.get(i).getProperty(),false),javaType,hashMaps.get(rHashMapRefs.get(i).getId()).getJavaType(),false);
-            hashItem.getSetHashField().add(setMethod);
-            hashItem.getGetHashField().add(getMethod);
+            if(!rHashMapRefs.get(i).isSerialize()) {
+                // 填充两个集合
+                hashItems.add(hashMaps.get(rHashMapRefs.get(i).getId()).getJavaType());
+                itemproperty.add(rHashMapRefs.get(i).getProperty());
+                // 补充嵌套字段对应的set、get函数
+                Method getMethod = getorsetMethod(getorsetName(rHashMapRefs.get(i).getProperty(), true), javaType, hashMaps.get(rHashMapRefs.get(i).getId()).getJavaType(), true);
+                Method setMethod = getorsetMethod(getorsetName(rHashMapRefs.get(i).getProperty(), false), javaType, hashMaps.get(rHashMapRefs.get(i).getId()).getJavaType(), false);
+                hashItem.getSetHashField().add(setMethod);
+                hashItem.getGetHashField().add(getMethod);
+            }
         }
-
     }
 
     // 构建无序set
@@ -120,10 +181,11 @@ public class BuilderItemMap {
                 setItems.add(si);
                 hashItem.getExecutes().put(rSetMap.getProperty(),si);
             }
-
         }
     }
 
+
+    // 构造SetItem
     private SetItem createSetItem(Class javaType, RSetMap rSetMap) {
         if(log.isDebugEnabled()){
             log.debug("--------building SetItem: '"+rSetMap.getProperty()+"'");
@@ -134,6 +196,7 @@ public class BuilderItemMap {
         return new SetItem(OPBuilderHelper.setSaddOP(handle),OPBuilderHelper.setSmemberOP(handle),setMethod,getMethod,property);
     }
 
+    // 构造SortedSetItem
     private SortedSetItem createSortedSetItem(Class javaType, RSetMap rSetMap) {
         String property = rSetMap.getProperty();
         Method getMethod = getorsetMethod(getorsetName(property,true),javaType,rSetMap.getJavaType(),true);
@@ -165,27 +228,9 @@ public class BuilderItemMap {
     }
 
 
-    // 创造FieldItem
-    private void completeHashItem_FieldItem(Class javaType, HashItem hashItem, RHashMap rHashMap) {
-        List<RFieldMap> rFieldMaps = rHashMap.getRFieldMaps();
-        List<FieldItem> fieldItems = hashItem.getFieldItems();
-        for(int i=0;i<rFieldMaps.size();i++){
-            RFieldMap rFieldMap = rFieldMaps.get(i);
-            FieldItem fi = createFieldItem(javaType,rFieldMap);
-            fieldItems.add(fi);
-            hashItem.getExecutes().put(rFieldMap.getProperty(),fi);
-        }
-    }
 
-    private FieldItem createFieldItem(Class javaType, RFieldMap rFieldMap) {
-        if(log.isDebugEnabled()){
-            log.debug("--------building FieldItem: '"+rFieldMap.getProperty()+"'");
-        }
-        String property = rFieldMap.getProperty();
-        Method getMethod = getorsetMethod(getorsetName(property,true),javaType,null,true);
-        Method setMethod = getorsetMethod(getorsetName(property,false),javaType,rFieldMap.getJavaType(),false);
-        return new FieldItem(OPBuilderHelper.hashSetOP(handle),OPBuilderHelper.hashGetOP(handle),setMethod,getMethod,property,rFieldMap.getJavaType());
-    }
+
+
 
     // 填充StringItem
     private void completeHashItem_StringItem(Class javaType,HashItem hashItem,RHashMap rHashMap) {
@@ -231,6 +276,12 @@ public class BuilderItemMap {
             if(get){
                 method = from.getMethod(name);
             }else{
+                if(List.class.isAssignableFrom(field)){
+                    field = List.class;
+                }
+                if(Set.class.isAssignableFrom(field)){
+                    field = Set.class;
+                }
                 method = from.getMethod(name,field);
             }
         } catch (NoSuchMethodException e) {

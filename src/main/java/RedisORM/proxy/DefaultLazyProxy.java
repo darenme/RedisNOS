@@ -4,6 +4,8 @@ import RedisORM.Configuration;
 import RedisORM.executor.Execute;
 import RedisORM.executor.ItemBuilderAssist;
 import RedisORM.executor.opItem.HashItem;
+import RedisORM.logging.Log;
+import RedisORM.logging.LogFactory;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodProxy;
 import redis.clients.jedis.Jedis;
@@ -21,8 +23,11 @@ public class DefaultLazyProxy implements LazyProxy {
     private HashItem hashItem;
     private String id;
     private String key;
+    // 还没有被加载的字段
     private Set<String> properties ;
     private Set<String> change;
+
+    private Log log;
 
 
     public DefaultLazyProxy(Configuration configuration, Set<String> change, Object target, HashItem hashItem, String id) {
@@ -32,6 +37,7 @@ public class DefaultLazyProxy implements LazyProxy {
         this.hashItem = hashItem;
         this.id = id;
         this.key = target.getClass().getCanonicalName()+"$"+id;
+        log = LogFactory.getLog(DefaultLazyProxy.class);
 
         Object realValue = ItemBuilderAssist.ChangeType(hashItem.getIdType(),id);
         try {
@@ -65,13 +71,22 @@ public class DefaultLazyProxy implements LazyProxy {
             String property = methodName.substring(3, methodName.length()).toLowerCase();
             if (methodName.startsWith("get")) {
                 if (properties.contains(property)) {
+                    if(log.isDebugEnabled()){
+                        log.debug("----load field: "+property);
+                    }
                     LoadProperty(property);
                 }
             }
             if (methodName.equals("toString")) {
+                if(log.isDebugEnabled()){
+                    log.debug("----load other field: ");
+                }
                 CompleteLoad();
             }
             if(methodName.startsWith("set")){
+                if(log.isDebugEnabled()){
+                    log.debug("----set field: " + property);
+                }
                 properties.remove(property);
                 change.add(property);
             }
@@ -119,7 +134,6 @@ public class DefaultLazyProxy implements LazyProxy {
     // 加载嵌套类
     private void LoadHash(Execute execute,String property){
 
-
         Jedis jedis = configuration.getDataSource().getJedis();
         String[] subids = jedis.hget(key,"#{subIds}").split("\\|");
         List<String> ids = hashItem.getHashproperty();
@@ -136,7 +150,6 @@ public class DefaultLazyProxy implements LazyProxy {
         Object value =execute.get(jedis,key,subid);
         jedis.close();
         try {
-//            System.out.println("completeLoad "+property+" "+index+" "+value);
             hashItem.getSetHashField().get(index).invoke(target,value);
         } catch (IllegalAccessException e) {
             e.printStackTrace();

@@ -41,6 +41,10 @@ public class ItemBuilderAssist {
 
     private OP setSmemberOP = null;
 
+    private OP fieldSetByteOP = null;
+
+    private OP fieldGetByteOP = null;
+
     public ItemBuilderAssist(Handle handle) {
         this.handle = handle;
         init();
@@ -69,6 +73,11 @@ public class ItemBuilderAssist {
             setSaddOP = new SetSaddOP(handle.getClass().getMethod("sadd", Jedis.class, String.class, String[].class),handle);
 
             setSmemberOP = new SetSmemberOP(handle.getClass().getMethod("smember", Jedis.class, String.class),handle);
+
+            fieldGetByteOP = new HashGetByteOP(handle.getClass().getMethod("hgetbyte", Jedis.class, byte[].class, byte[].class),handle);
+
+            fieldSetByteOP = new HashSetByteOP(handle.getClass().getMethod("hsetbyte", Jedis.class, byte[].class, byte[].class),handle);
+
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -89,6 +98,9 @@ public class ItemBuilderAssist {
         }
         if(item == SortedSetItem.class){
             return new SortedSetItem(setZaddOP,setZrangeOP,setMethod,getMethod,property);
+        }
+        if(item == SerializeItem.class){
+            return new SerializeItem(fieldSetByteOP,fieldGetByteOP,setMethod,getMethod,clazz,property);
         }
         return null;
     }

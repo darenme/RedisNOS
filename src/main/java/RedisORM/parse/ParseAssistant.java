@@ -21,7 +21,7 @@ public class ParseAssistant {
         e = root.element(name);
         if(exist&&e==null) {
             log.error("Missing child element"+name+" in the element: "+root.getName());
-            throw new NoSuchElementException("name");
+            throw new NoSuchElementException(name);
         }
         return e;
     }

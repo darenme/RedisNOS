@@ -1,6 +1,7 @@
 package RedisORM.executor.handle;
 
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.util.List;
 import java.util.Map;
@@ -15,20 +16,18 @@ public class DefaultHandle implements Handle{
     }
 
     @Override
-    public long push(Jedis jedis, String key, String... values) {
-
-        return jedis.lpush(key,values);
-
+    public void push(Transaction transaction, String key, String... values) {
+        transaction.lpush(key,values);
     }
 
     @Override
-    public long zadd(Jedis jedis, String key,Map<String,Double> map) {
-        return jedis.zadd(key,map);
+    public void zadd(Transaction transaction, String key,Map<String,Double> map) {
+        transaction.zadd(key,map);
     }
 
     @Override
-    public long sadd(Jedis jedis, String key, String... value) {
-        return jedis.sadd(key,value);
+    public void sadd(Transaction transaction, String key, String... value) {
+        transaction.sadd(key,value);
     }
 
 
@@ -42,8 +41,8 @@ public class DefaultHandle implements Handle{
     }
 
     @Override
-    public String set(Jedis jedis, String key, String value) {
-        return jedis.set(key, value);
+    public void set(Transaction transaction, String key, String value) {
+        transaction.set(key, value);
     }
 
     @Override
@@ -52,8 +51,8 @@ public class DefaultHandle implements Handle{
     }
 
     @Override
-    public long hset(Jedis jedis, String key, String field, String value) {
-        return jedis.hset(key,field,value);
+    public void hset(Transaction transaction, String key, String field, String value) {
+        transaction.hset(key,field,value);
     }
 
     @Override
@@ -64,6 +63,16 @@ public class DefaultHandle implements Handle{
     @Override
     public Map<String, String> hgetAll(Jedis jedis, String key) {
         return jedis.hgetAll(key);
+    }
+
+    @Override
+    public byte[] hgetbyte(Jedis jedis, byte[] key, byte[] field) {
+        return jedis.hget(key,field);
+    }
+
+    @Override
+    public void hsetbyte(Transaction transaction, byte[] key, byte[] field,byte[] value) {
+        transaction.hset(key,field,value);
     }
 
 }

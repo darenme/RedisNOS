@@ -23,17 +23,30 @@ public class RHashMap{
 
     private Class javaType = null;
 
-    private List<RStringMap> RStringMaps = new ArrayList<RStringMap>();
+    private List<RStringMap> RStringMaps;
 
-    private List<RListMap> RListMaps = new ArrayList<RListMap>();
+    private List<RListMap> RListMaps;
 
-    private List<RSetMap> RSetMaps = new ArrayList<RSetMap>();
+    private List<RSetMap> RSetMaps;
 
-    private List<RHashMapRef> RHashMapRefs = new ArrayList<RHashMapRef>();
+    private List<RHashMapRef> RHashMapRefs;
 
-    private List<RFieldMap> RFieldMaps = new ArrayList<RFieldMap>();
+    private List<RFieldMap> RFieldMaps;
 
-    public RHashMap() {
+    private boolean serialize;
+
+
+    public RHashMap(String id,  Class javaType, boolean serialize) {
+        this.id = id;
+        this.javaType = javaType;
+        this.serialize = serialize;
+        if(!serialize){
+            RStringMaps = new ArrayList<RStringMap>();
+            RListMaps = new ArrayList<RListMap>();
+            RSetMaps = new ArrayList<RSetMap>();
+            RHashMapRefs = new ArrayList<RHashMapRef>();
+            RFieldMaps = new ArrayList<RFieldMap>();
+        }
     }
 
     public String getId() {
@@ -80,7 +93,9 @@ public class RHashMap{
         this.javaType = javaType;
     }
 
-
+    public boolean isSerialize() {
+        return serialize;
+    }
 
     @Override
     public String toString() {
@@ -93,6 +108,7 @@ public class RHashMap{
                 ", RSetMaps=" + RSetMaps +
                 ", RHashMapRefs=" + RHashMapRefs +
                 ", RFieldMaps=" + RFieldMaps +
+                ", serialize=" + serialize +
                 '}';
     }
 }

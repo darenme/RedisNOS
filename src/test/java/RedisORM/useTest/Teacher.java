@@ -1,11 +1,13 @@
 package RedisORM.useTest;
 
-import RedisORM.annotation.RField;
-import RedisORM.annotation.RHash;
-import RedisORM.annotation.RKey;
+import RedisORM.annotations.RField;
+import RedisORM.annotations.RHash;
+import RedisORM.annotations.RKey;
+
+import java.io.Serializable;
 
 @RHash(id="teacher")
-public class Teacher {
+public class Teacher implements Serializable{
 
     @RKey
     private int id;

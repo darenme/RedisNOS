@@ -1,20 +1,19 @@
-package RedisORM.annotation;
-
+package RedisORM.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-/*
-这个用于hash类型，用于字段上，默认field为字段的名称.
- */
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RField {
+public @interface RList {
 
-    String field() default "";
+    String key() default "";
+
+    Class<? extends List> javaType() default ArrayList.class;
 
     boolean exist() default false;
 

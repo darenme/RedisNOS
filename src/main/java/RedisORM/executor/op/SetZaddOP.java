@@ -2,6 +2,7 @@ package RedisORM.executor.op;
 
 import RedisORM.executor.handle.Handle;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,7 +19,12 @@ public class SetZaddOP extends AbstractOP{
     // key , set<String>
     @Override
     protected Object opreate(Jedis jedis, Object... objects) {
-        Long ans=null;
+        throw new WrongCallException("StringSetOP can,t use Transaction!");
+
+    }
+
+    @Override
+    protected Object opreate(Transaction transaction, Object... objects) {
         Set<String> set = (Set<String>) objects[1];
         Map<String,Double> map = new HashMap<>();
         double i = 1;
@@ -26,12 +32,12 @@ public class SetZaddOP extends AbstractOP{
             map.put(s,i++);
         }
         try {
-            ans = (Long) method.invoke(handle,jedis,objects[0],map);
+            method.invoke(handle,transaction,objects[0],map);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        return ans;
+        return null;
     }
 }

@@ -2,6 +2,7 @@ package RedisORM.executor.op;
 
 import RedisORM.executor.handle.Handle;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class OPBuilderHelper {
     public static StringSetOP stringSetOP(Handle handle){
         Method method = null;
         try {
-            method = handle.getClass().getMethod("set", Jedis.class, String.class, String.class);
+            method = handle.getClass().getMethod("set", Transaction.class, String.class, String.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -43,17 +44,39 @@ public class OPBuilderHelper {
     public static HashSetOP hashSetOP(Handle handle){
         Method method = null;
         try {
-            method = handle.getClass().getMethod("hset", Jedis.class, String.class, String.class, String.class);
+            method = handle.getClass().getMethod("hset", Transaction.class, String.class, String.class, String.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
         return new HashSetOP(method,handle);
     }
 
+    public static HashSetByteOP hashSetByteOP(Handle handle){
+        Method method = null;
+        try {
+            method = handle.getClass().getMethod("hsetbyte", Transaction.class, byte[].class, byte[].class, byte[].class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return new HashSetByteOP(method,handle);
+    }
+
+    public static HashGetByteOP hashGetByteOP(Handle handle){
+        Method method = null;
+        try {
+            method = handle.getClass().getMethod("hgetbyte", Jedis.class, byte[].class, byte[].class);
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return new HashGetByteOP(method,handle);
+    }
+
+
+
     public static ListPushOP listPushOP(Handle handle){
         Method method = null;
         try {
-            method = handle.getClass().getMethod("push", Jedis.class, String.class, String[].class);
+            method = handle.getClass().getMethod("push", Transaction.class, String.class, String[].class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -73,7 +96,7 @@ public class OPBuilderHelper {
     public static SetSaddOP setSaddOP(Handle handle){
         Method method = null;
         try {
-            method = handle.getClass().getMethod("sadd", Jedis.class, String.class, String[].class);
+            method = handle.getClass().getMethod("sadd", Transaction.class, String.class, String[].class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
@@ -93,7 +116,7 @@ public class OPBuilderHelper {
     public static SetZaddOP setZaddOP(Handle handle){
         Method method = null;
         try {
-            method = handle.getClass().getMethod("zadd", Jedis.class, String.class, Map.class);
+            method = handle.getClass().getMethod("zadd", Transaction.class, String.class, Map.class);
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }

@@ -1,12 +1,13 @@
-package RedisORM.annotation;
+package RedisORM.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.TYPE,ElementType.FIELD})
+// 类似与数据库的id,一次作为hash的key
+@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RHash {
-    String id();
+public @interface RKey {
+
 }

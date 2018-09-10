@@ -1,11 +1,16 @@
 <redis>
     <settings>
-        <lazyload>false</lazyload>
+        <lazyload>true</lazyload>
+        <cache eviction="lru" flush="60000" size="512" readonly="true"/>
     </settings>
 
     <typeAlias>
         <alias name="teacher" javaType="RedisORM.useTest.Teacher"/>
         <alias name="student" javaType="RedisORM.useTest.Student"/>
+        <alias name="student2" javaType="RedisORM.useTest.Student2"/>
+        <alias name="student3" javaType="RedisORM.useTest.Student3"/>
+        <alias name="student4" javaType="RedisORM.useTest.Student4"/>
+        <alias name="othertype" javaType="RedisORM.useTest.OtherType"/>
     </typeAlias>
 
     <datasource>
@@ -14,9 +19,24 @@
         <pooled maxtotal="30" maxidle="10">true</pooled>
     </datasource>
 
+    <mappers>
+        <hash id="student2" javaType="student2" serialize="true" >
+            <key property="id" />
+        </hash>
+        <hash id="student4" javaType="student4">
+            <key property="id" />
+            <field property="age" />
+            <field property="name" />
+            <hash property="teacher1" id="teacher" serialize="true"/>
+            <hash property="teacher2" id="teacher"/>
+        </hash>
+    </mappers>
+
     <scan>
         <class type="teacher"/>
         <class type="student"/>
+        <class type="student3"/>
+        <class type="othertype"/>
     </scan>
 
 </redis>

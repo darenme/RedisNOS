@@ -3,6 +3,7 @@ package RedisORM.executor.opItem;
 import RedisORM.executor.Execute;
 import RedisORM.executor.op.OP;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,10 +30,12 @@ public class SetItem implements Execute{
     }
 
     @Override
-    public void save(Jedis jedis,String id,Object t) {
+    public void save(Transaction transaction, String id, Object t) {
         try {
             Set<String> set = (Set<String>) getMethod.invoke(t);
-            saveop.op(jedis,fieldName,set);
+            String[] ss = new String[0];
+            ss = set.toArray(ss);
+            saveop.op(transaction,id+"."+fieldName,ss);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -42,7 +45,7 @@ public class SetItem implements Execute{
 
     @Override
     public Object get(Jedis jedis,String id,Object t) {
-        Set<String> set = (Set<String>) getop.op(jedis,fieldName);
+        Set<String> set = (Set<String>) getop.op(jedis,id+"."+fieldName);
         if(set==null) return null;
         try {
             setMethod.invoke(t,set);
@@ -52,6 +55,11 @@ public class SetItem implements Execute{
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public String getProperty() {
+        return fieldName;
     }
 
 }

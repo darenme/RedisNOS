@@ -3,6 +3,7 @@ package RedisORM.executor.opItem;
 import RedisORM.executor.Execute;
 import RedisORM.executor.op.OP;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -29,10 +30,10 @@ public class SortedSetItem implements Execute{
     }
 
     @Override
-    public void save(Jedis jedis,String id,Object t) {
+    public void save(Transaction transaction, String id, Object t) {
         try {
             Set set = (Set) getMethod.invoke(t);
-            saveop.op(jedis,fieldName,set);
+            saveop.op(transaction,id+"."+fieldName,set);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -52,6 +53,11 @@ public class SortedSetItem implements Execute{
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public String getProperty() {
+        return fieldName;
     }
 
 

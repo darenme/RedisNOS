@@ -13,7 +13,6 @@ public class DefaultBuilder implements Builder {
 
     private Log log;
 
-
     public DefaultBuilder(Configuration configuration) {
 
         this.configuration = configuration;

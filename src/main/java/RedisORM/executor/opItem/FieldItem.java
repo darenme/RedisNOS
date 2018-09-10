@@ -4,6 +4,11 @@ import RedisORM.executor.Execute;
 import RedisORM.executor.ItemBuilderAssist;
 import RedisORM.executor.op.OP;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -28,6 +33,7 @@ public class FieldItem implements Execute {
     // 字段的get函数
     private Method getMethod;
 
+
     public FieldItem(OP saveop, OP getop,  Method setMethod, Method getMethod ,String fieldName, Class fieldType) {
         this.saveop = saveop;
         this.getop = getop;
@@ -38,20 +44,22 @@ public class FieldItem implements Execute {
     }
 
     @Override
-    public void save(Jedis jedis,String id,Object t) {
+    public void save(Transaction transaction, String key, Object t) {
+
         try {
-            saveop.op(jedis,id,fieldName,getMethod.invoke(t).toString());
+            saveop.op(transaction,key,fieldName,getMethod.invoke(t).toString());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
-    public Object get(Jedis jedis,String id,Object t) {
+    public Object get(Jedis jedis,String key,Object t) {
         try {
-            String value = (String) getop.op(jedis,id,fieldName);
+            String value = (String) getop.op(jedis,key,fieldName);
             if(value==null) return null;
             Object setValue = ItemBuilderAssist.ChangeType(fieldType,value);
             setMethod.invoke(t,setValue);
@@ -63,6 +71,10 @@ public class FieldItem implements Execute {
         return null;
     }
 
+    @Override
+    public String getProperty() {
+        return fieldName;
+    }
 
 
 }

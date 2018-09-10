@@ -5,11 +5,12 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.io.*;
 import java.util.Set;
 
-public class global {
+public class global implements Serializable{
 
-
+    public int a=1;
     // 使用链接池进行链接
     @Test
     public void test1(){
@@ -94,6 +95,35 @@ public class global {
         Jedis jedis = new Jedis("localhost", 6379);
         System.out.println(jedis.type("hash.1"));
         jedis.close();
+    }
+
+    @Test
+    public void test3(){
+        String q = "qqq";
+        String f = "fff";
+
+
+        try {
+            ByteArrayOutputStream ba = new ByteArrayOutputStream();
+            ObjectOutputStream oos = null;
+            oos = new ObjectOutputStream(ba);
+            oos.writeObject(new global());
+
+            Jedis jedis = new Jedis("localhost", 6379);
+            jedis.hset(q.getBytes(),f.getBytes(),ba.toByteArray());
+
+            ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(jedis.hget(q.getBytes(),f.getBytes())));
+            global g = (global) ois.readObject();
+            System.out.println(g.a);
+
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+
     }
 
 

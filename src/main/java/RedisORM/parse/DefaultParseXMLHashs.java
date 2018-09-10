@@ -6,9 +6,9 @@ import RedisORM.logging.Log;
 import RedisORM.logging.LogFactory;
 import RedisORM.maps.*;
 import RedisORM.parse.exceptions.ErrorValueException;
+import RedisORM.parse.exceptions.NoSuchElementException;
 import RedisORM.parse.exceptions.UndefinedNodeException;
 import org.dom4j.Element;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,11 +107,29 @@ public class DefaultParseXMLHashs implements ParseXMLHashs {
 
     }
 
-    // <hash property="" id="" />
-    public RHashMapRef parseHash (Element e) {
+    // <hash property="" id="" serialize="true"/>
+    // 字段为hash，将它封装为一个RHashMapRef
+    public RHashMapRef parseHash (Element e,Class pType) {
         String property = ParseAssistant.getAttribute(e,"property",false);
         String id = ParseAssistant.getAttribute(e,"id",false);
-        return new RHashMapRef(property,id);
+        String ser = ParseAssistant.getAttribute(e,"serialize",true);
+        Class clazz = null;
+        try {
+            clazz = pType.getDeclaredField(property).getType();
+        } catch (NoSuchFieldException e1) {
+            e1.printStackTrace();
+        }
+        boolean serialize = false;
+        if(ser!=null){
+            if(ser.equals("true")){
+                serialize = true;
+            }else if(ser.equals("false")){
+                serialize = false;
+            }else {
+                throw new ErrorValueException("value of attribute serialize is error!");
+            }
+        }
+        return new RHashMapRef(property,id,clazz,serialize);
     }
 
     // <field property="" field="" javaType="" exist="" />
@@ -132,55 +150,82 @@ public class DefaultParseXMLHashs implements ParseXMLHashs {
         }else{
             return new RFieldMap(property,clazz,field,ex);
         }
-
     }
 
-    // <hash id="" javaType="" >
+    // <hash id="" javaType="" serialize="true">
+    // 解析一个类的对应的配置
     public RHashMap parseHashMap(Element e){
-        RHashMap rHashMap = new RHashMap();
 
         // 获取id
         String id = ParseAssistant.getAttribute(e, "id", false);
-        rHashMap.setId(id);
+        if(log.isDebugEnabled()){
+            log.debug("--------start parsing mapper:'"+id+"'");
+        }
+        // 获取serialize
+        String ser = ParseAssistant.getAttribute(e,"serialize",true);
+        boolean serialize = false;
+        if(ser!=null){
+            if(ser.equals("true")){
+                serialize = true;
+            }else if(ser.equals("false")){
+                serialize = false;
+            }else{
+                throw new ErrorValueException("value of attribute 'serialize' in "+ e.getName()+"is error");
+            }
+        }
         // 获取javaType
         String javaType = ParseAssistant.getAttribute(e, "javaType", false);
         Class clazz = ParseAssistant.parseJavaType(typeAlias,javaType);
-        rHashMap.setJavaType(clazz);
+        RHashMap rHashMap = new RHashMap(id,clazz,serialize);
+        if(e.element("key")==null){
+            String error = "Lack of child nodes 'key' in hash element "+ParseAssistant.getAttribute(e,"id",false);
+            log.error(error);
+            throw new NoSuchElementException(error);
+        }
         // 解析子节点
         List<Element> elements = e.elements();
+
         for (Element element : elements) {
             // 节点名
             String name = element.getName();
 
-            if (name.equals("string")) {
-                rHashMap.getRStringMaps().add(parseString(element));
-                continue;
+            if(serialize){
+                if (name.equals("key")) {
+                    rHashMap.setKey(parseKey(element,clazz));
+                    break;
+                }
+            }else{
+                if (name.equals("string")) {
+                    rHashMap.getRStringMaps().add(parseString(element));
+                    continue;
+                }
+                if (name.equals("list")) {
+                    rHashMap.getRListMaps().add(parseList(element,clazz));
+                    continue;
+                }
+                if (name.equals("set")) {
+                    rHashMap.getRSetMaps().add(parseSet(element,clazz));
+                    continue;
+                }
+                if (name.equals("key")) {
+                    rHashMap.setKey(parseKey(element,clazz));
+                    continue;
+                }
+                if (name.equals("field")) {
+                    rHashMap.getRFieldMaps().add(parseField(element,clazz));
+                    continue;
+                }
+                if (name.equals("hash")) {
+                    rHashMap.getRHashMapRefs().add(parseHash(element,clazz));
+                    continue;
+                }
+                throw new UndefinedNodeException(element.getName() + " is not defined");
             }
-            if (name.equals("list")) {
-                rHashMap.getRListMaps().add(parseList(element,clazz));
-                continue;
-            }
-            if (name.equals("set")) {
-                rHashMap.getRSetMaps().add(parseSet(element,clazz));
-                continue;
-            }
-            if (name.equals("key")) {
-                rHashMap.setKey(parseKey(element,clazz));
-                continue;
-            }
-            if (name.equals("field")) {
-                rHashMap.getRFieldMaps().add(parseField(element,clazz));
-                continue;
-            }
-            if (name.equals("hash")) {
-                rHashMap.getRHashMapRefs().add(parseHash(element));
-                continue;
-            }
-            throw new UndefinedNodeException(element.getName() + " is not defined");
         }
         if(log.isDebugEnabled()){
-            log.debug("--------parsing mapper:'"+id+"'");
+            log.debug("--------finish parsing mapper:'"+id+"'");
         }
+
         return rHashMap;
     }
 

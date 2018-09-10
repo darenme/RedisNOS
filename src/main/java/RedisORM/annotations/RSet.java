@@ -1,16 +1,22 @@
-package RedisORM.annotation;
+package RedisORM.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface RString {
-    // 默认为格式为 key.RString
-    // 如果设置了，则前面不会加上key
+public @interface RSet {
+
     String key() default "";
+
+    boolean sorted() default false;
+
+    Class<? extends Set> javaType() default HashSet.class;
 
     boolean exist() default false;
 }

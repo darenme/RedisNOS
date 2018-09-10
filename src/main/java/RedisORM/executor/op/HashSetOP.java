@@ -4,6 +4,7 @@ import RedisORM.executor.handle.Handle;
 import RedisORM.logging.Log;
 import RedisORM.logging.LogFactory;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Transaction;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,17 +21,22 @@ public class HashSetOP extends AbstractOP{
 
     @Override
     protected Object opreate(Jedis jedis, Object... objects) {
-        Long ans=null;
+        throw new WrongCallException("StringSetOP can't use Jedis!");
+
+    }
+
+    @Override
+    protected Object opreate(Transaction transaction, Object... objects) {
         if(log.isDebugEnabled()){
             log.debug("----hset key: "+objects[0]+" field: "+objects[1]+" value: "+objects[2]);
         }
         try {
-            ans = (Long) method.invoke(handle,jedis,objects[0],objects[1],objects[2]);
+            method.invoke(handle,transaction,objects[0],objects[1],objects[2]);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        return ans;
+        return null;
     }
 }

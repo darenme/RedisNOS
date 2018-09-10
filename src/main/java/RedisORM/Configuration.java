@@ -1,6 +1,8 @@
 package RedisORM;
 
 
+import RedisORM.cache.Cache;
+import RedisORM.cache.CacheSetting;
 import RedisORM.datasource.DataSource;
 import RedisORM.executor.opItem.HashItem;
 import RedisORM.maps.RHashMap;
@@ -35,6 +37,8 @@ public class Configuration {
     private DataSource dataSource;
 
     private boolean lazy;
+
+    private CacheSetting cacheSetting;
 
     public Configuration(String filename){
         // 初始化
@@ -117,5 +121,13 @@ public class Configuration {
 
     public void setLazy(boolean lazy) {
         this.lazy = lazy;
+    }
+
+    public CacheSetting getCacheSetting() {
+        return cacheSetting;
+    }
+
+    public void setCacheSetting(CacheSetting cacheSetting) {
+        this.cacheSetting = cacheSetting;
     }
 }
