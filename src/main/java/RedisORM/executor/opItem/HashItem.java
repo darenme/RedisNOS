@@ -15,17 +15,21 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-
+/**
+ * 这个类对应着Redis中hash
+ * 保存了一个类中以hash类型保存的字段
+ */
 public class HashItem implements Execute{
 
     private Configuration configuration;
 
+    // 如果次HashItem是一个类中的某个字段，那么这就对应这这个字段的类型
     private Class javaType;
 
     // 是否使用序列化保存
     private boolean serialize;
 
-    // 类中的字段
+    // 类中以hash类型的field保存的字段
     private List<FieldItem> fieldItems;
 
     // 内嵌hash类,需要在执行时动态获取
@@ -37,6 +41,7 @@ public class HashItem implements Execute{
     // 设置id值的方法
     private Method idSetMethod;
 
+    // id的类型
     private Class idType;
 
     // 获取内嵌类对象的方法
@@ -60,6 +65,7 @@ public class HashItem implements Execute{
     // serialize保存字段
     private List<SerializeItem> serializeItems;
 
+    // hash类型字段的集合
     List<String> hashproperty;
 
     // 记录所有字段对应的执行器，用于延迟加载
@@ -90,8 +96,14 @@ public class HashItem implements Execute{
         }
     }
 
-    // key = Parent.ClassName$id
-    // key = Parent.ClassName$serialize$id
+    /**
+     * @Description: 根据对象，创建保存的key
+     * @Date 2018/9/12 16:54
+     * @param parent 父类的key
+     * @param t 对象
+     * @param serialize 是否是序列化保存
+     * @return key = Parent.ClassName$id 或 key = Parent.ClassName$serialize$id
+     */
     private String createKey(String parent,Object t,boolean serialize){
         // hash的key设置为 className$id
         if(parent==null){
@@ -108,6 +120,12 @@ public class HashItem implements Execute{
         return key;
     }
 
+    /**
+     * @Description: 获取对象的id
+     * @Date 2018/9/12 16:56
+     * @param object 对象
+     * @return id
+     */
     private String getId(Object object){
         try {
             return idGetMethod.invoke(object).toString();
@@ -119,10 +137,8 @@ public class HashItem implements Execute{
         return null;
     }
 
-
     @Override
     public void save(Transaction transaction, String parent, Object t) {
-
         String key = createKey(parent,t,serialize);
 
         // 如果需要使用序列化，使用序列化保存
@@ -136,9 +152,15 @@ public class HashItem implements Execute{
 
     }
 
-    // 使用hash保存
+    /**
+     * @Description: 使用非序列化方式保存
+     * @Date 2018/9/12 16:59
+     * @param transaction 使用的Transaction
+     * @param key   保存的key
+     * @param t     保存的对象
+     * @return void
+     */
     private void saveAsHash(Transaction transaction, String key, Object t) {
-
         // 保存id
         try {
             transaction.hset(key,"#{id}",idGetMethod.invoke(t).toString());
@@ -199,8 +221,15 @@ public class HashItem implements Execute{
 
     }
 
+    /**
+     * @Description: 一序列化的方式保存
+     * @Date 2018/9/12 17:00
+     * @param transaction 使用的Transaction
+     * @param key    对应的key
+     * @param t      对应的对象
+     * @return void
+     */
     private void saveAsSerialize(Transaction transaction, String key, Object t) {
-
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(out);
@@ -212,8 +241,14 @@ public class HashItem implements Execute{
 
     }
 
+    /**
+     * @Description: 检查对应的对象是否在Redis中
+     * @Date 2018/9/12 17:01
+     * @param jedis 使用的Jedis
+     * @param ido   查到对象的id
+     * @return boolean
+     */
     public boolean exist(Jedis jedis,Object ido){
-
         if(ido==null||ido.toString().equals("")) return false;
 
         String id = ido.toString();
@@ -354,7 +389,14 @@ public class HashItem implements Execute{
         return value;
     }
 
-    // 获取并反序列化存入jedis的对象
+
+    /**
+     * @Description: 获取并反序列化存入Redis的对象
+     * @Date 2018/9/12 17:02
+     * @param jedis 使用的jedis
+     * @param key   使用的key
+     * @return java.lang.Object
+     */
     private Object getAsSerialize(Jedis jedis, String key) {
         Object value = null;
         try {
@@ -368,7 +410,14 @@ public class HashItem implements Execute{
         return  value;
     }
 
-
+    /**
+     * @Description: 更新一个对象中的数据
+     * @Date 2018/9/12 17:03
+     * @param transaction 使用的Transaction
+     * @param property  需要更新的字段
+     * @param object    需要更新的对象
+     * @return void
+     */
     public void update(Transaction transaction,Set<String> property,Object object){
         try {
             String id = (String) idGetMethod.invoke(object);
@@ -384,12 +433,25 @@ public class HashItem implements Execute{
         }
     }
 
+    /**
+     * @Description: 根据对象创建CacheKey
+     * @Date 2018/9/12 17:07
+     * @param object 对象
+     * @return 创建的CacheKey
+     */
     public CacheKey getCacheKey(Object object){
+
         return new CacheKey(javaType.getCanonicalName(),getId(object));
     }
 
+    /**
+     * @Description: 此方法用来获取嵌套子类的id
+     * @Date 2018/9/12 17:08
+     * @param parent  父类的key
+     * @param object  操作的对象
+     * @return 返回嵌套子类的id
+     */
     public List<String> getSubKeys(String parent,Object object){
-
         String keyns = parent==null?createKey(parent,object,false):parent+"."+createKey(null,object,false);
 
         List<String> list = new ArrayList<>();
@@ -427,6 +489,13 @@ public class HashItem implements Execute{
         return list;
     }
 
+    /**
+     * @Description: 删除对象在Redis中的数据
+     * @Date 2018/9/12 17:09
+     * @param transaction
+     * @param object
+     * @return boolean
+     */
     public boolean delete(Transaction transaction,Object object){
         List<String> keys = getSubKeys(null,object);
         if(keys!=null){
@@ -506,5 +575,7 @@ public class HashItem implements Execute{
     public boolean isSerialize() {
         return serialize;
     }
+
+
 
 }

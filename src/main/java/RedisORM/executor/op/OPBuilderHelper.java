@@ -7,9 +7,10 @@ import redis.clients.jedis.Transaction;
 import java.lang.reflect.Method;
 import java.util.Map;
 
+/**
+ * 这个类用于构建OP的实现类。
+ */
 public class OPBuilderHelper {
-
-
 
     public static StringGetOP stringGetOP(Handle handle){
         Method method = null;

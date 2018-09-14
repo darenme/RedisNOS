@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 解析<hash>节点的接口实现类
+ */
 public class DefaultParseXMLHashs implements ParseXMLHashs {
 
     private Configuration configuration;

@@ -10,16 +10,25 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * 这个类对应着Redis中list
+ * 保存了一个类中以list类型保存的字段
+ */
 public class ListItem implements Execute{
 
+    // 保存的操作
     private OP saveop;
 
+    // 获取的操作
     private OP getop;
 
+    // 字段的set方法
     private Method setMethod;
 
+    // 字段的get方法
     private Method getMethod;
 
+    // 字段的名字
     private String fieldName;
 
     public ListItem(OP saveop, OP getop, Method setMethod, Method getMethod, String fieldName) {
@@ -40,6 +49,7 @@ public class ListItem implements Execute{
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
+
         saveop.op(transaction,id+"."+fieldName,list);
     }
 
@@ -60,5 +70,16 @@ public class ListItem implements Execute{
     @Override
     public String getProperty() {
         return fieldName;
+    }
+
+    @Override
+    public String toString() {
+        return "ListItem{" +
+                "saveop=" + saveop +
+                ", getop=" + getop +
+                ", setMethod=" + setMethod +
+                ", getMethod=" + getMethod +
+                ", fieldName='" + fieldName + '\'' +
+                '}';
     }
 }

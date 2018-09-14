@@ -1,12 +1,15 @@
 package RedisORM.maps;
 
-// <string property="" key="" exist=""/>
 
-// <string property="" key="" exist=""/>
+/**
+ * <string property="" key="" exist=""/>
+ * 这个类记录映射为string类型的字段的映射
+ */
 public class RStringMap extends RBaseMap {
-    private String key = null;
 
-    private boolean exist = false;
+    private String key;
+
+    private boolean exist;
 
     public RStringMap(String property, String key, boolean exist) {
         super(property, java.lang.String.class);

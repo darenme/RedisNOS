@@ -2,6 +2,9 @@ package RedisORM.datasource;
 
 import redis.clients.jedis.Jedis;
 
+/**
+ * 非池化的数据源
+ */
 public class UnPooledDataSource implements DataSource{
 
     private String host;

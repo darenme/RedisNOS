@@ -5,20 +5,15 @@ import RedisORM.executor.op.*;
 import RedisORM.executor.opItem.*;
 import RedisORM.parse.exceptions.ErrorTypeException;
 import redis.clients.jedis.Jedis;
-
 import java.lang.reflect.Method;
 import java.util.Map;
 
+/**
+ * 这个类帮助创建执行器
+ */
 public class ItemBuilderAssist {
 
-//    public static Method getMethod(Class clazz,String name,Class... classes){
-//
-//        try {
-//            return clazz.getMethod(name,classes);
-//        } catch (ErrorMethodException e) {
-//            e.printStackTrace();
-//        }
-//    }
+
     private Handle handle = null;
 
     private OP stringSetOP = null;

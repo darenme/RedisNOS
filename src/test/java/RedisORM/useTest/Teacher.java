@@ -4,10 +4,8 @@ import RedisORM.annotations.RField;
 import RedisORM.annotations.RHash;
 import RedisORM.annotations.RKey;
 
-import java.io.Serializable;
-
 @RHash(id="teacher")
-public class Teacher implements Serializable{
+public class Teacher {
 
     @RKey
     private int id;

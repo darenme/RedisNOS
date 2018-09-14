@@ -9,14 +9,14 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Set;
 
-// 这个类用来解析一个类
+/**
+ * 这个类用来解析一个类中的注解
+ */
+
 public class ParseClass {
 
     Configuration configuration;
 
-//    RHashMap rHashMap=null;
-//
-//    Class clazz=null;
 
     public ParseClass(Configuration configuration) {
         this.configuration = configuration;

@@ -8,14 +8,16 @@ import RedisORM.logging.LogFactory;
 import RedisORM.parse.exceptions.NoSuchElementException;
 import org.dom4j.Element;
 
-
-
-/*
+/**
 <datasource>
 	<host></host>
 	<port></port>
 	<pooled maxtotal="" maxidle="">true</pooled>
 </datasource>
+ */
+
+/**
+ * 解析<datasource>的接口实现类
  */
 public class DefaultParseDataSource implements ParseDataSource{
 

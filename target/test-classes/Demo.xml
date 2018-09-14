@@ -1,0 +1,42 @@
+<redis>
+    <!-- 配置设置 -->
+    <settings>
+        <!-- 是否开启懒加载L:开启 -->
+        <lazyload>true</lazyload>
+        <!-- 设置Cache:淘汰策略为最近最久未使用；刷新时间为：60000ms；缓存大小：512个对象；是否只读：只读 -->
+        <cache eviction="lru" flush="60000" size="512" readonly="true"/>
+    </settings>
+
+    <!-- 配置别名,简化后面配置的书写 -->
+    <typeAlias>
+        <alias name="teacher" javaType="RedisORM.Demo.Teacher"/>
+        <alias name="student" javaType="RedisORM.Demo.Student"/>
+    </typeAlias>
+
+    <!-- 配置数据源 -->
+    <datasource>
+        <!-- 数据源主机地址 -->
+        <host>localhost</host>
+        <!-- 主机端口 -->
+        <port>6379</port>
+        <!-- 最大连接数量为:30，最大等待链接数量为:10 -->
+        <pooled maxtotal="30" maxidle="10">true</pooled>
+    </datasource>
+
+    <!-- Redis类型与类字段的映射 -->
+    <mappers>
+        <!-- 配置Student类的映射 -->
+        <hash id="teacher" javaType="teacher">
+            <key property="id" />
+            <field property="age" />
+            <field property="name" />
+            <list property="research" />
+        </hash>
+    </mappers>
+
+    <!-- 扫描指定类的注解 -->
+    <scan>
+        <class type="student"/>
+    </scan>
+
+</redis>

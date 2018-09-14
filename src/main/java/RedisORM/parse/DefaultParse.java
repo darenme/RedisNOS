@@ -8,6 +8,9 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
+/**
+ * 默认的解析实现类
+ */
 public class DefaultParse implements Parse{
 
     Configuration configuration;

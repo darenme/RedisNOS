@@ -8,16 +8,25 @@ import redis.clients.jedis.Transaction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * 这个类对应着Redis中string类型
+ * 保存了一个类中以string类型保存的字段
+ */
 public class StringItem implements Execute{
 
+    // 保存hash字段的操作方法
     private OP saveop;
 
+    // 获取hash字段的操作方法
     private OP getop;
 
+    // 字段的set函数
     private Method setMethod;
 
+    // 字段的get函数
     private Method getMethod;
 
+    // 字段的名字
     private String fieldName;
 
     public StringItem(OP saveop, OP getop,Method setMethod, Method getMethod,String fieldName) {

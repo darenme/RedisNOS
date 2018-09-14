@@ -17,19 +17,26 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
+/**
+ * 会话的一个默认实现类
+ */
 
 public class DefaultRedisSession implements RedisSession {
 
+    // 记录每个对象被改变的字段
     private Map<Object,Set<String>> changeMap;
 
     private Log log;
 
     Configuration configuration;
 
+    // Session工厂
     SessionFactory sessionFactory;
 
+    // 使用的Jedis
     Jedis jedisForTransaction;
 
+    // 使用的事务
     Transaction transaction;
 
 

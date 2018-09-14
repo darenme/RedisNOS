@@ -7,12 +7,21 @@ import RedisORM.parse.DefaultParse;
 import RedisORM.parse.Parse;
 import java.io.File;
 
+
+
 public class DefaultBuilder implements Builder {
 
     private Configuration configuration;
 
     private Log log;
 
+
+    /**
+     * @Description: 构造函数
+     * @Date 2018/9/12 11:48
+     * @param configuration 使用的配置类
+     * @return
+     */
     public DefaultBuilder(Configuration configuration) {
 
         this.configuration = configuration;
@@ -21,8 +30,13 @@ public class DefaultBuilder implements Builder {
 
     }
 
+    /**
+     * @Description: 构建函数
+     * @Date 2018/9/12 11:49
+     * @param filename 配置文件的文件名
+     * @return void
+     */
     public void build(String filename) {
-
         configuration.setConfigurationFile(searchFile(filename));
         // 解析配置文件
         parse();
@@ -31,7 +45,12 @@ public class DefaultBuilder implements Builder {
     }
 
 
-
+    /**
+     * @Description: 寻找配置文件
+     * @Date 2018/9/12 11:50
+     * @param filename 配置文件名
+     * @return java.io.File 返回一个File对象
+     */
     private File searchFile(String filename){
         String path = ClassLoader.getSystemResource("").getPath();
         path = path.substring(1,path.length());
@@ -40,6 +59,12 @@ public class DefaultBuilder implements Builder {
         return new File(path);
     }
 
+    /**
+     * @Description: 解析配置文件
+     * @Date 2018/9/12 11:51
+     * @param
+     * @return void
+     */
     private void parse(){
         if(log.isDebugEnabled()){
             log.debug("【--start parsing configuration file--】");
@@ -64,6 +89,12 @@ public class DefaultBuilder implements Builder {
 
     }
 
+    /**
+     * @Description: 生成执行器
+     * @Date 2018/9/12 11:51
+     * @param
+     * @return void
+     */
     private void generate(){
         if(log.isDebugEnabled()){
             log.debug("【--start building executor--】");

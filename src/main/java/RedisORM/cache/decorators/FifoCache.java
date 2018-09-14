@@ -6,16 +6,16 @@ import java.util.LinkedList;
 import java.util.concurrent.locks.ReadWriteLock;
 
 
-/*
- * FIFO缓存，这个类就是维护一个FIFO链表
- * 这个策略与LRU类似，只不过getObject不算是使用了一次
+/**
+ * FIFO缓存，使用一个链表来保存缓存插入的顺序
  */
 public class FifoCache implements Cache {
 
 
     private final Cache delegate;
-    // 队列
+    // 保存插入的顺序
     private Deque<Object> keyList;
+    // 缓存的大小
     private int size;
 
     public FifoCache(Cache delegate, int size) {
@@ -44,6 +44,12 @@ public class FifoCache implements Cache {
         delegate.putObject(key, value);
     }
 
+    /**
+     * @Description: 检查是否移除链头缓存
+     * @Date 2018/9/12 13:00
+     * @param key 加入的缓存
+     * @return void
+     */
     private void cycleKeyList(Object key) {
         keyList.addLast(key);
         if (keyList.size() > size) {

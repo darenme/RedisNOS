@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * sortedset类型的插入操作
+ */
 public class SetZaddOP extends AbstractOP{
 
     public SetZaddOP(Method method, Handle handle) {
@@ -19,7 +22,7 @@ public class SetZaddOP extends AbstractOP{
     // key , set<String>
     @Override
     protected Object opreate(Jedis jedis, Object... objects) {
-        throw new WrongCallException("StringSetOP can,t use Transaction!");
+        throw new WrongCallException("SetZaddOP can't use Jedis!");
 
     }
 

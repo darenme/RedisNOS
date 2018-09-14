@@ -40,33 +40,3 @@
     </scan>
 
 </redis>
-
-
-
-        <!--@RHash(id="test")-->
-        <!--public class Test {-->
-
-        <!--@RKey-->
-        <!--String id;-->
-
-        <!--@RField(field = "name",exist = Exist.Default)-->
-        <!--int age;-->
-
-        <!--@RField(field = "name",exist = Exist.Default)-->
-        <!--String name;-->
-
-        <!--@RHash(id="test")-->
-        <!--Test address;-->
-
-        <!--@RHash(id="test")-->
-        <!--Test concat;-->
-
-        <!--@RSet(key="teachers",sorted = false)-->
-        <!--Test teachers;-->
-
-        <!--@RList(key="courses")-->
-        <!--Test courses;-->
-
-        <!--@RString(key = "signature" , exist = Exist.EX)-->
-        <!--String signature;-->
-        <!--}-->

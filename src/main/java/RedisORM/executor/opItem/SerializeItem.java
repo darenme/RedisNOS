@@ -9,6 +9,10 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * 这个类对应着Redis中hash的一个field
+ * 保存了一个类中以list类型保存的字段
+ */
 public class SerializeItem implements Execute{
 
     // 保存hash字段的操作方法
@@ -23,8 +27,10 @@ public class SerializeItem implements Execute{
     // 字段的get函数
     private Method getMethod;
 
+    // 对应字段的类型
     private Class javaType;
 
+    // 对应字段的名字
     private String property;
 
     public SerializeItem(OP saveop, OP getop, Method setMethod, Method getMethod, Class javaType, String property) {

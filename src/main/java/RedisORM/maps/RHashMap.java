@@ -2,7 +2,7 @@ package RedisORM.maps;
 
 import java.util.ArrayList;
 import java.util.List;
-/*
+/**
 <hashs>
     <hash id="" Type="" >
         <key property="" javaType="" />
@@ -15,24 +15,37 @@ import java.util.List;
 </hashs>
  */
 
+/**
+ * 这个类记录了一个类中的所有映射
+ */
+
 public class RHashMap{
 
-    private String id = null;
+    // 这个类映射的id
+    private String id ;
 
+    // 这个类中的id的映射
     private RKeyMap key = null;
 
-    private Class javaType = null;
+    // 如果这个字段部位null，则表示这个RHashmap代表着某个嵌套类
+    private Class javaType;
 
+    // string类型的映射
     private List<RStringMap> RStringMaps;
 
+    // list类型的映射
     private List<RListMap> RListMaps;
 
+    // set类型的映射
     private List<RSetMap> RSetMaps;
 
+    // 嵌套类型的映射
     private List<RHashMapRef> RHashMapRefs;
 
+    // field类型的映射
     private List<RFieldMap> RFieldMaps;
 
+    // 是否以序列化方式保存
     private boolean serialize;
 
 

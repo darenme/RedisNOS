@@ -8,6 +8,9 @@ import org.dom4j.Element;
 
 import java.util.List;
 
+/**
+ * 解析类注解的实现接口
+ */
 public class DefaultParseAnnotationHashs implements ParseAnnotationHashs{
 
     private Configuration configuration;

@@ -1,7 +1,5 @@
 package RedisORM;
 
-
-import RedisORM.cache.Cache;
 import RedisORM.cache.CacheSetting;
 import RedisORM.datasource.DataSource;
 import RedisORM.executor.opItem.HashItem;
@@ -11,10 +9,12 @@ import RedisORM.builder.DefaultBuilder;
 import RedisORM.parse.ParseAlias;
 import RedisORM.parse.ParseAnnotationHashs;
 import RedisORM.parse.ParseXMLHashs;
-
 import java.io.File;
 import java.util.Map;
 
+/**
+ * 配置类，用来保存框架的整个信息
+ */
 public class Configuration {
 
     // 配置文件名
@@ -23,21 +23,28 @@ public class Configuration {
     // 记录别名
     private TypeAlias typeAlias;
 
-    // 记录所有hash
+    // 记录所有映射配置，key=id,value=对应的映射
     private Map<String,RHashMap> hashMaps;
 
+    // 解析<typeAlias>节点的实现类
     private ParseAlias parseAlias;
 
+    // 解析<mapper>节点的实现类
     private ParseXMLHashs parseXMLHashs;
 
+    // 解析<<scan>>节点的实现类
     private ParseAnnotationHashs parseAnnotationHashs;
 
+    // 存放每个类对应的执行器
     private Map<Class,HashItem> hashItemMap;
 
+    // 数据源
     private DataSource dataSource;
 
+    // 是否开启懒加载
     private boolean lazy;
 
+    // Cache设置
     private CacheSetting cacheSetting;
 
     public Configuration(String filename){

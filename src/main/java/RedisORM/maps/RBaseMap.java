@@ -1,5 +1,8 @@
 package RedisORM.maps;
 
+/**
+ * 这个类是一个基础的映射，记录字段的名字和类型
+ */
 
 public class RBaseMap {
 

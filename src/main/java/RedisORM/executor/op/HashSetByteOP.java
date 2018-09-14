@@ -9,6 +9,9 @@ import redis.clients.jedis.Transaction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * hash类型的插入操作，插入的key、field、value都是byte数组类型
+ */
 public class HashSetByteOP extends AbstractOP{
 
     private Log log;
@@ -20,7 +23,7 @@ public class HashSetByteOP extends AbstractOP{
 
     @Override
     protected Object opreate(Jedis jedis, Object... objects) {
-        throw new WrongCallException("StringSetOP can't use Jedis!");
+        throw new WrongCallException("HashSetByteOP can't use Jedis!");
     }
 
     @Override

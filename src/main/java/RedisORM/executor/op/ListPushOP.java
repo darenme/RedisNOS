@@ -8,6 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * list类型的插入操作
+ */
 public class ListPushOP extends AbstractOP{
 
 
@@ -17,14 +20,14 @@ public class ListPushOP extends AbstractOP{
 
     // objects中的参数为key ,list
     @Override
-    protected Object opreate(Jedis jedis, Object... objects) {
+    protected Object opreate(Transaction transaction, Object... objects) {
         List list = (List) objects[1];
         String[] values = new String[list.size()];
         for(int i=0;i<list.size();i++){
             values[i]= (String) list.get(i);
         }
         try {
-            method.invoke(handle,jedis,objects[0],values);
+            method.invoke(handle,transaction,objects[0],values);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
@@ -34,7 +37,7 @@ public class ListPushOP extends AbstractOP{
     }
 
     @Override
-    protected Object opreate(Transaction transaction, Object... objects) {
-        return null;
+    protected Object opreate(Jedis jedis, Object... objects) {
+        throw new WrongCallException("ListPushOP can't use Jedis!");
     }
 }

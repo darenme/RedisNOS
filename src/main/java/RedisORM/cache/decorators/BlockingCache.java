@@ -9,8 +9,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * 这个类实现了阻塞式获取缓存。
+ *
  * 存在这样一种情况：两个线程同时查找缓存，都没有找到，那么它们都会从Redis中来加载，这样的重复的加载造成了资源的浪费
  * 所以，只需要一个加载即可，另一个要等待前一个线程获取到数据。
+ *
  */
 
 public class BlockingCache implements Cache {
@@ -18,8 +21,8 @@ public class BlockingCache implements Cache {
     private final Cache delegate;
     // 每个key对应的锁
     private final ConcurrentHashMap<Object, ReentrantLock> locks;
-    // 超时时间
-    private long timeout;
+    // 锁超时时间
+    private long timeout=1000;
 
     public BlockingCache(Cache delegate) {
         this.delegate = delegate;
@@ -60,18 +63,35 @@ public class BlockingCache implements Cache {
         return value;
     }
 
+    /**
+     * @Description: 移除某个缓存
+     * @Date 2018/9/12 12:26
+     * @param key 对应的key
+     * @return java.lang.Object
+     */
     @Override
     public Object removeObject(Object key) {
         return delegate.removeObject(key);
     }
 
+    /**
+     * @Description: 清除所有缓存
+     * @Date 2018/9/12 12:28
+     * @param
+     * @return void
+     */
     @Override
     public void clear() {
         delegate.clear();
     }
 
 
-    // 获取指定key的锁
+    /**
+     * @Description: 获取key对应的锁，如果没有则创建一个
+     * @Date 2018/9/12 12:28
+     * @param key 对应的key
+     * @return java.util.concurrent.locks.ReentrantLock 返回的锁
+     */
     private ReentrantLock getLockForKey(Object key) {
         // 创建锁
         ReentrantLock lock = new ReentrantLock();
@@ -80,7 +100,12 @@ public class BlockingCache implements Cache {
         return previous == null ? lock : previous;
     }
 
-    // 获取key的锁
+    /**
+     * @Description: 获取key对应的锁
+     * @Date 2018/9/12 12:24
+     * @param key 对应的key
+     * @return void
+     */
     private void acquireLock(Object key) {
         // 获取key对应的锁
         Lock lock = getLockForKey(key);
@@ -98,6 +123,12 @@ public class BlockingCache implements Cache {
         }
     }
 
+    /**
+     * @Description: 释放锁
+     * @Date 2018/9/12 12:25
+     * @param key 对应的key
+     * @return void
+     */
     private void releaseLock(Object key) {
         ReentrantLock lock = locks.get(key);
         if (lock!=null&&lock.isHeldByCurrentThread()) {
@@ -105,11 +136,4 @@ public class BlockingCache implements Cache {
         }
     }
 
-    public long getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(long timeout) {
-        this.timeout = timeout;
-    }
 }

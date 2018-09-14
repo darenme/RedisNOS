@@ -9,12 +9,8 @@ import java.util.LinkedList;
 
 
 /**
- * Soft Reference cache decorator
- * Thanks to Dr. Heinz Kabutz for his guidance here.
  * 软引用缓存,核心是SoftReference
  * 目的是当value没用时使它失效
- *
- * @author Clinton Begin
  */
 public class SoftCache implements Cache {
     // 存放最近访问的缓存，防止被回收
@@ -59,8 +55,8 @@ public class SoftCache implements Cache {
     @Override
     public Object getObject(Object key) {
         Object result = null;
-        @SuppressWarnings("unchecked") // assumed delegate cache is totally managed by this cache
-                SoftReference<Object> softReference = (SoftReference<Object>) delegate.getObject(key);
+
+        SoftReference<Object> softReference = (SoftReference<Object>) delegate.getObject(key);
         if (softReference != null) {
             //核心调用SoftReference.get取得元素
             result = softReference.get();

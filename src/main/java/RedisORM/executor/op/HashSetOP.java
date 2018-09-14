@@ -9,6 +9,9 @@ import redis.clients.jedis.Transaction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * hash类型的插入操作
+ */
 public class HashSetOP extends AbstractOP{
 
     private Log log;
@@ -21,15 +24,12 @@ public class HashSetOP extends AbstractOP{
 
     @Override
     protected Object opreate(Jedis jedis, Object... objects) {
-        throw new WrongCallException("StringSetOP can't use Jedis!");
+        throw new WrongCallException("HashSetOP can't use Jedis!");
 
     }
 
     @Override
     protected Object opreate(Transaction transaction, Object... objects) {
-        if(log.isDebugEnabled()){
-            log.debug("----hset key: "+objects[0]+" field: "+objects[1]+" value: "+objects[2]);
-        }
         try {
             method.invoke(handle,transaction,objects[0],objects[1],objects[2]);
         } catch (IllegalAccessException e) {

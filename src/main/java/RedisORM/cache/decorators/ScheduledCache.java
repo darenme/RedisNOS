@@ -2,31 +2,26 @@
 package RedisORM.cache.decorators;
 
 import RedisORM.cache.Cache;
-import java.util.concurrent.locks.ReadWriteLock;
-
-
 
 /**
  * 定时调度缓存
- * 目的是每一小时清空一下缓存
+ * 目的是每隔一段时间清空一下缓存
  *
  */
 public class ScheduledCache implements Cache {
 
   private Cache delegate;
+  // 清空缓存的周期
   protected long clearInterval;
+  // 上一次清空的时间
   protected long lastClear;
 
   public ScheduledCache(Cache delegate,Long time) {
     this.delegate = delegate;
-
     this.clearInterval = time==null?(60*60*1000):time;
     this.lastClear = System.currentTimeMillis();
   }
 
-  public void setClearInterval(long clearInterval) {
-    this.clearInterval = clearInterval;
-  }
 
   @Override
   public String getId() {
@@ -73,8 +68,13 @@ public class ScheduledCache implements Cache {
     return delegate.equals(obj);
   }
 
+  /**
+   * @Description: 如果到时间了，清空一下缓存
+   * @Date 2018/9/12 13:22
+   * @param
+   * @return boolean
+   */
   private boolean clearWhenStale() {
-    //如果到时间了，清空一下缓存
     if (System.currentTimeMillis() - lastClear > clearInterval) {
       clear();
       return true;

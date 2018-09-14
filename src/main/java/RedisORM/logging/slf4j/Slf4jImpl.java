@@ -22,8 +22,7 @@ import org.slf4j.Marker;
 import org.slf4j.spi.LocationAwareLogger;
 
 /**
- * @author Clinton Begin
- * @author Eduardo Macarron
+ * Slf4j的实现
  */
 public class Slf4jImpl implements Log {
 
@@ -39,9 +38,7 @@ public class Slf4jImpl implements Log {
         log = new Slf4jLocationAwareLoggerImpl((LocationAwareLogger) logger);
         return;
       } catch (SecurityException e) {
-        // fail-back to Slf4jLoggerImpl
       } catch (NoSuchMethodException e) {
-        // fail-back to Slf4jLoggerImpl
       }
     }
 

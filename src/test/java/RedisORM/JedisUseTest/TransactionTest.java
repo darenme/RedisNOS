@@ -25,6 +25,7 @@ public class TransactionTest {
 //        String s = transaction.get("t1").get();//redis.clients.jedis.exceptions.JedisDataException: Please close pipeline or multi block before calling this method.
 
         Response s = transaction.get("t1");
+
         transaction.exec();
 
         System.out.println(s.get());
@@ -36,5 +37,10 @@ public class TransactionTest {
         }
 
         jedis.close();
+    }
+
+    @Test
+    public void test(){
+
     }
 }

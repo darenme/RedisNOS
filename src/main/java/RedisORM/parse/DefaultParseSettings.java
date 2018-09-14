@@ -11,6 +11,9 @@ import org.dom4j.Element;
 
 import java.util.*;
 
+/**
+ * 解析<setting>节点的接口实现类
+ */
 public class DefaultParseSettings implements ParseSettings{
 
     Configuration configuration;

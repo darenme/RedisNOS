@@ -16,15 +16,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * 代理类，如果启用了懒加载，就是用一个代理类实现延迟加载
+ */
 public class DefaultLazyProxy implements LazyProxy {
 
     private Configuration configuration;
+    // 被代理的对象
     private Object target;
+    // 对象所对应的HashItem
     private HashItem hashItem;
+    // 这个对象的id
     private String id;
     private String key;
     // 还没有被加载的字段
     private Set<String> properties ;
+    // 已经改变的字段
     private Set<String> change;
 
     private Log log;
@@ -59,6 +66,12 @@ public class DefaultLazyProxy implements LazyProxy {
         en.setCallback(this);
         //4.创建子类(代理对象)
         return en.create();
+    }
+
+    @Override
+    public Object getObject() {
+        CompleteLoad();
+        return target;
     }
 
 
@@ -101,8 +114,13 @@ public class DefaultLazyProxy implements LazyProxy {
         return returnValue;
     }
 
+    /**
+     * @Description: 完成剩余没加载字段的加载
+     * @Date 2018/9/12 22:48
+     * @param
+     * @return void
+     */
     private void CompleteLoad() {
-
         Map<String,Execute> executeMap = hashItem.getExecutes();
         for(String s:properties){
             Execute exe = executeMap.get(s);
@@ -117,6 +135,12 @@ public class DefaultLazyProxy implements LazyProxy {
         properties.clear();
     }
 
+    /**
+     * @Description: 加载字段
+     * @Date 2018/9/12 22:48
+     * @param property 需要被加载的字段的名字
+     * @return void
+     */
     private void LoadProperty(String property){
         Execute execute = hashItem.getExecutes().get(property);
         if(execute!=null){
@@ -131,9 +155,14 @@ public class DefaultLazyProxy implements LazyProxy {
         properties.remove(property);
     }
 
-    // 加载嵌套类
+    /**
+     * @Description: 加载嵌套类字段
+     * @Date 2018/9/12 22:49
+     * @param execute 所需使用的执行器
+     * @param property 加载的字段名
+     * @return void
+     */
     private void LoadHash(Execute execute,String property){
-
         Jedis jedis = configuration.getDataSource().getJedis();
         String[] subids = jedis.hget(key,"#{subIds}").split("\\|");
         List<String> ids = hashItem.getHashproperty();

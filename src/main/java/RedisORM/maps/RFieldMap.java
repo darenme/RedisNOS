@@ -1,11 +1,16 @@
 package RedisORM.maps;
 
-// <field property="" field="" javaType="" exist="" />
+
+
+/**
+ * <field property="" field="" javaType="" exist="" />
+ * 这个类记录映射为field类型的字段的映射
+ */
 public class RFieldMap extends RBaseMap{
 
-    private String field = null;
+    private String field;
 
-    private boolean exist = false;
+    private boolean exist;
 
 
     public RFieldMap(String property, Class javaType, String field, boolean exist) {

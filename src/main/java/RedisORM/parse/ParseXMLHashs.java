@@ -1,8 +1,11 @@
 package RedisORM.parse;
 
-import RedisORM.maps.*;
+
 import org.dom4j.Element;
 
+/**
+ * 解析<hash>节点
+ */
 public interface ParseXMLHashs {
 
 //    public RStringMap parseString(Element e);

@@ -8,6 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
+/**
+ * list类型的获取操作
+ */
 public class ListRangeOP extends AbstractOP{
 
 
@@ -30,6 +33,6 @@ public class ListRangeOP extends AbstractOP{
 
     @Override
     protected Object opreate(Transaction transaction, Object... objects) {
-        throw new WrongCallException("StringSetOP can,t use Transaction!");
+        throw new WrongCallException("ListRangeOP can't use Transaction!");
     }
 }

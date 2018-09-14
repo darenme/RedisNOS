@@ -8,6 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+/**
+ * sortedset类型的获取操作
+ */
 public class SetZrangeOP extends AbstractOP{
 
     public SetZrangeOP(Method method, Handle handle) {
@@ -29,6 +32,6 @@ public class SetZrangeOP extends AbstractOP{
 
     @Override
     protected Object opreate(Transaction transaction, Object... objects) {
-        throw new WrongCallException("StringSetOP can,t use Transaction!");
+        throw new WrongCallException("SetZrangeOP can't use Transaction!");
     }
 }

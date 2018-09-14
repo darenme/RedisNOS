@@ -1,37 +1,19 @@
-/**
- *    Copyright 2009-2018 the original author or authors.
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
- */
+
 package RedisORM.logging;
 
 import RedisORM.logging.log4j.Log4jImpl;
 import RedisORM.logging.log4j2.Log4j2Impl;
 import RedisORM.logging.nologging.NoLoggingImpl;
 import RedisORM.logging.slf4j.Slf4jImpl;
-
 import java.lang.reflect.Constructor;
 
 /**
- * @author Clinton Begin
- * @author Eduardo Macarron
+ * 用于创建指定的日志适配器类
  */
+
 public final class LogFactory {
 
-  /**
-   * Marker to be used by logging implementations that support markers
-   * 用于支持标记的日志实现所使用的标记
-   */
+
   public static final String MARKER = "MYBATIS";
 
   //用来记录当前使用的第三方日志组件所对应的适配器的构造方法
@@ -39,11 +21,10 @@ public final class LogFactory {
 
   static {
     // 尝试按顺序加载日志组件
-    // 这边还是第一次见，（类名::静态方法） 作为runnable类型的参数
-//    tryImplementation(LogFactory::useSlf4jLogging);
-//    tryImplementation(LogFactory::useLog4J2Logging);
-//    tryImplementation(LogFactory::useLog4JLogging);
-//    tryImplementation(LogFactory::useNoLogging);
+    //    tryImplementation(LogFactory::useSlf4jLogging);
+    //    tryImplementation(LogFactory::useLog4J2Logging);
+    //    tryImplementation(LogFactory::useLog4JLogging);
+    //    tryImplementation(LogFactory::useNoLogging);
     try {
       logConstructor = Log4jImpl.class.getConstructor(String.class);
     } catch (NoSuchMethodException e) {
@@ -80,10 +61,6 @@ public final class LogFactory {
     setImplementation(Slf4jImpl.class);
   }
 
-//  public static synchronized void useCommonsLogging() {
-//    setImplementation(JakartaCommonsLoggingImpl.class);
-//  }
-
   public static synchronized void useLog4JLogging() {
     setImplementation(Log4jImpl.class);
   }
@@ -92,25 +69,15 @@ public final class LogFactory {
     setImplementation(Log4j2Impl.class);
   }
 
-//  public static synchronized void useJdkLogging() {
-//    setImplementation(org.apache.ibatis.logging.jdk14.Jdk14LoggingImpl.class);
-//  }
-
-//  public static synchronized void useStdOutLogging() {
-//    setImplementation(org.apache.ibatis.logging.stdout.StdOutImpl.class);
-//  }
-
   public static synchronized void useNoLogging() {
     setImplementation(NoLoggingImpl.class);
   }
 
-  // 如果log构造函数还为空，则尝试加载此log适配器
   private static void tryImplementation(Runnable runnable) {
     if (logConstructor == null) {
       try {
         runnable.run();
       } catch (Throwable t) {
-        // ignore
       }
     }
   }
@@ -125,7 +92,6 @@ public final class LogFactory {
       }
       logConstructor = candidate;
     } catch (Throwable t) {
-//      throw new LogException("Error setting Log implementation.  Cause: " + t, t);
     }
   }
 

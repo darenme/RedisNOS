@@ -9,6 +9,9 @@ import org.dom4j.Element;
 
 import java.util.List;
 
+/**
+ * 解析别名的接口实现类
+ */
 public class DefaultParseAlias implements ParseAlias{
 
     Configuration configuration;

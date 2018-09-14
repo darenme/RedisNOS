@@ -7,6 +7,9 @@ import RedisORM.parse.exceptions.SameAliasNameException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 这个类用来记录框架预设和用户添加的别名
+ */
 public class TypeAlias {
 
     private Map<String,String> alias= new HashMap<String,String>();

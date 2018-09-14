@@ -7,6 +7,9 @@ import redis.clients.jedis.Transaction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * string类型的获取操作
+ */
 public class StringGetOP extends AbstractOP{
 
     public StringGetOP(Method method, Handle handle) {

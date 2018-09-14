@@ -12,7 +12,10 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-// 这个类将要执行的一个操作
+/**
+ * 这个类对应着Redis中hash类型的一个field
+ * 保存了一个类中某个字段的一系列操作方法
+ */
 public class FieldItem implements Execute {
 
     // 保存hash字段的操作方法

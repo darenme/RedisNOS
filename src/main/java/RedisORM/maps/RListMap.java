@@ -2,7 +2,11 @@ package RedisORM.maps;
 
 import java.util.ArrayList;
 
-// <list property="" key="" exist="" />
+
+/**
+ * <list property="" key="" exist="" />
+ * 这个类记录映射为list类型的字段的映射
+ */
 public class RListMap extends RBaseMap{
 
     private String key = null;

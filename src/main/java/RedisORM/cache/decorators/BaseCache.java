@@ -6,14 +6,19 @@ import RedisORM.cache.Cache;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// 这个是最基础的缓存
+/**
+ * 这个是最基础的缓存的实现类。
+ * 使用一个ConcurrentHashMap来保存缓存
+ */
 public class BaseCache implements Cache {
 
-    // 使用HashMap来保存缓存
+    // 保存缓存
     private Map<Object, Object> cache = new ConcurrentHashMap<>();
 
+    // 缓存的id
     private String id;
 
+    // 构造函数
     public BaseCache(String id) {
         this.id = id;
     }

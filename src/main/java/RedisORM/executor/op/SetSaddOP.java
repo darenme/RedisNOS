@@ -8,6 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+/**
+ * set类型的插入操作
+ */
 public class SetSaddOP extends AbstractOP{
 
     public SetSaddOP(Method method, Handle handle) {
@@ -16,7 +19,7 @@ public class SetSaddOP extends AbstractOP{
 
     @Override
     protected Object opreate(Jedis jedis, Object... objects) {
-        throw new WrongCallException("StringSetOP can't use Jedis!");
+        throw new WrongCallException("SetSaddOP can't use Jedis!");
     }
 
     @Override

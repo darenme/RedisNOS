@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 
-/*
+/**
  * 最近最少使用缓存
  * 基于 LinkedHashMap 重写其removeEldestEntry 方法实现。
  */
@@ -28,8 +28,10 @@ public class LruCache implements Cache {
 
     private final Cache delegate;
 
-    //额外用了一个map才做lru，但是委托的Cache里面其实也是一个map，这样等于用2倍的内存实现lru功能
+    //额外用了一个map做lru，但是委托的Cache里面其实也是一个map，这样等于用2倍的内存实现lru功能
     private Map<Object, Object> keyMap;
+
+    // 最近最久未被使用的缓存的key
     private Object eldestKey;
 
     public LruCache(Cache delegate, int size) {
@@ -43,18 +45,23 @@ public class LruCache implements Cache {
         return delegate.getSize();
     }
 
+    /**
+     * @Description: 设置缓存的大小
+     * @Date 2018/9/12 13:12
+     * @param size  设置的大小阈值
+     * @return void
+     */
     public void setSize(final int size) {
         keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
-            private static final long serialVersionUID = 4267176411845948333L;
 
             @Override
             protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
-                boolean tooBig = size() > size;
-                if (tooBig) {
+                boolean over = size()>size;
+                if (over) {
                     //获取需要移除的那个键
                     eldestKey = eldest.getKey();
                 }
-                return tooBig;
+                return over;
             }
         };
     }
@@ -71,10 +78,16 @@ public class LruCache implements Cache {
         cycleKeyList(key);
     }
 
-    // 根据插入的情况来更新缓存（也就是若需要移除则移除数据）
+    /**
+     * @Description:  根据插入的情况来更新缓存（也就是若需要移除则移除数据）
+     * @Date 2018/9/12 13:15
+     * @param key 插入的键
+     * @return void
+     */
     private void cycleKeyList(Object key) {
+        // 插入键，在linkedhashmap中，我们值关心键，所以插入的值不重要
         keyMap.put(key, key);
-        //keyMap是linkedhashmap，最老的记录已经被移除了，然后这里我们还需要移除被委托的那个cache的记录
+        //keyMap是linkedhashmap，最老的记录已经被移除了，然而这里我们还需要移除被实际保存Cache的中对应的Cache
         if (eldestKey != null) {
             delegate.removeObject(eldestKey);
             eldestKey = null;

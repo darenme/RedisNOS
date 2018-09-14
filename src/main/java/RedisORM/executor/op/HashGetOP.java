@@ -7,6 +7,9 @@ import redis.clients.jedis.Transaction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * hash类型获取操作
+ */
 public class HashGetOP extends AbstractOP{
 
     public HashGetOP(Method method, Handle handle) {
@@ -28,6 +31,6 @@ public class HashGetOP extends AbstractOP{
 
     @Override
     protected Object opreate(Transaction transaction, Object... objects) {
-        throw new WrongCallException("StringSetOP can't use Jedis!");
+        throw new WrongCallException("HashGetOP can't use Transaction!");
     }
 }

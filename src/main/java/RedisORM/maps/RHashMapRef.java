@@ -1,14 +1,20 @@
 package RedisORM.maps;
 
+/**
+ * 嵌套类的映射
+ */
 public class RHashMapRef {
 
-    private String property = null;
+    // 字段的名字
+    private String property;
 
     // 指向的hashMap的id
-    private String id = null;
+    private String id;
 
+    // 字段的类型
     private Class javaType;
 
+    // 是否序列化方式保存
     private boolean serialize;
 
     public RHashMapRef(String property, String id, Class javaType, boolean serialize) {

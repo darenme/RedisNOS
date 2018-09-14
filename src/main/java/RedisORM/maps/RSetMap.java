@@ -1,9 +1,10 @@
 package RedisORM.maps;
 
-// <set property="" key="" exist="" sorted="" />
 
-import java.util.HashSet;
-import java.util.LinkedList;
+/**
+ * <set property="" key="" exist="" sorted="" />
+ * 这个类记录映射为set类型的字段的映射
+ */
 
 public class RSetMap extends RBaseMap {
     private String key = null;

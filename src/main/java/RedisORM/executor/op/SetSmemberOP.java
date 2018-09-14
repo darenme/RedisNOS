@@ -8,6 +8,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Set;
 
+/**
+ * set类型的获取操作
+ */
 public class SetSmemberOP extends AbstractOP{
 
     public SetSmemberOP(Method method, Handle handle) {
@@ -29,6 +32,6 @@ public class SetSmemberOP extends AbstractOP{
 
     @Override
     protected Object opreate(Transaction transaction, Object... objects) {
-        throw new WrongCallException("StringSetOP can't use Jedis!");
+        throw new WrongCallException("SetSmemberOP can't use Transaction!");
     }
 }

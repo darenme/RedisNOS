@@ -9,11 +9,15 @@ import java.lang.reflect.Method;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * 这个抽象类实现了数据加工的大致流程，子类只要实现具体的加工过程就可以了
+ */
 public abstract class AbstractOP implements OP{
 
-
+    // 数据操作使用的方法
     protected Method method;
 
+    // 方法属于的Handle实现类
     protected Handle handle;
 
     public AbstractOP(Method method, Handle handle) {
@@ -34,7 +38,21 @@ public abstract class AbstractOP implements OP{
         return ans;
     }
 
+    /**
+     * @Description: 使用Jedis来操作，主要用于获取
+     * @Date 2018/9/12 16:17
+     * @param jedis 使用的jedis对象
+     * @param objects 数据操作使用到的值
+     * @return
+     */
     protected abstract Object opreate(Jedis jedis,Object... objects);
 
+    /**
+     * @Description: 使用Jedis来操作，主要用于插入数据
+     * @Date 2018/9/12 16:17
+     * @param transaction 使用的Transaction
+     * @param objects 数据操作使用到的值
+     * @return
+     */
     protected abstract Object opreate(Transaction transaction,Object... objects);
 }

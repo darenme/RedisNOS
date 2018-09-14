@@ -9,6 +9,9 @@ import redis.clients.jedis.Transaction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * hash类型数据的获取操作，其中使用到的key、value是byte数组型数据，获取到的结果也是byte数组类型数据
+ */
 public class HashGetByteOP extends AbstractOP{
 
     private Log log;
@@ -34,6 +37,6 @@ public class HashGetByteOP extends AbstractOP{
 
     @Override
     protected Object opreate(Transaction transaction, Object... objects) {
-        throw new WrongCallException("StringSetOP can't use Jedis!");
+        throw new WrongCallException("HashGetByteOP can't use Transaction!");
     }
 }

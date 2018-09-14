@@ -7,9 +7,9 @@ import RedisORM.logging.LogFactory;
 
 import java.util.concurrent.locks.ReadWriteLock;
 
-/*
+/**
  * 日志缓存
- * 添加功能：取缓存时打印命中率
+ * 添加功能：取缓存时打印命中率、存放和移除时打印信息
  */
 public class LoggingCache implements Cache {
 

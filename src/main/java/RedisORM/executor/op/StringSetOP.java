@@ -7,7 +7,9 @@ import redis.clients.jedis.Transaction;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-
+/**
+ * string类型的插入操作
+ */
 public class StringSetOP extends AbstractOP{
 
 
